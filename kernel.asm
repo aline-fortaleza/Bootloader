@@ -1,16 +1,64 @@
 org 0x7e00
 jmp 0x0000:start
 
+set_position:
+	mov ah, 02h
+	mov bh, 0
+	int 10h
+	ret
+
+hold_till_space:
+	mov di, string
+	call getchar
+	cmp al, ' '
+	jne hold_till_space
+
+	ret
+start_screen:
+
+	call video
+
+	mov dl, 35
+	mov dh, 1
+	call set_position
+
+	mov bl, 3
+	mov si, str_start0
+	call prints
+
+	mov dl, 30
+	mov dh, 8
+	call set_position
+
+	mov bl, 15
+	mov si, str_start1
+	call prints
+
+	mov dl, 30
+	mov dh, 16
+	call set_position
+
+	mov bl, 15
+	mov si, str_start2
+	call prints
+
+	mov dl, 30
+	mov dh, 24
+	call set_position
+
+	mov bl, 15
+	mov si, str_start3
+	call prints
+
+	call hold_till_space
+
+	ret
+
 video:
 	mov ah, 0
 	mov al, 12h
 	int 10h
 	ret
-
-data:
-	msg db 'a',0
-	;Dados do projeto...
-
 
 red_background:
 	mov ah, 0xb
@@ -105,20 +153,18 @@ start:
     xor ax, ax
     mov ds, ax
     mov es, ax
-    call video
-    call red_background
-    mov si, msg
-    call prints
+    call start_screen
 
-    mov ah, 0eh
-    mov al,'a'
-    mov bx,0
-    int 0x10
 
 
     
     ;Código do projeto...
-
+data:
+	string times 20 db 0
+	str_start0      db 'Viagens pelo Brasil',0 
+	str_start1      db 'Somente viagem de ida',0
+	str_start2      db 'Viagem de ida e volta',0
+	str_start3      db 'Sair do programa',0
 
    
 
