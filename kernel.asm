@@ -53,6 +53,15 @@ Clear_Screen:
 	mov cx, SCREENW*SCREENH
 	rep stosw				
 	ret
+
+Lose_Screen:
+	mov ax, 4020h
+	xor di, di
+	mov bl,0eh 
+	mov cx, SCREENW*SCREENH
+	rep stosw				
+	ret	
+
 Draw_snake:
 	xor bx, bx				
 	mov cx, [snakeLength]	
@@ -271,23 +280,57 @@ Delay_Looping:
 	.delay:
 		cmp [TIMER], bx
 		jl .delay
-	ret	
+	ret
+
+set_position:
+	mov ah, 02h
+	mov bh, 0
+	int 10h
+	ret
+
+putchar:
+ 	mov ah, 0x0e
+ 	int 10h
+ 	ret
+prints:            
+ 	.loop:
+ 		lodsb           
+ 		cmp al, 0
+ 		je .endloop
+ 		call putchar
+ 		jmp .loop
+ 	.endloop:
+ 	ret	
 
 game_won:
-	mov dword [ES:0000], 1F491F57h	; WI
-	mov dword [ES:0004], 1F211F4Eh	; N!
+	mov dl, 35
+	mov dh, 1
+	call set_position
+
+	mov bl, 7
+	mov si, str_start0
+	call prints
 	call reset
 	
 game_lost:
-	mov dword [ES:0000], 1F4F1F4Ch	; LO
-	mov dword [ES:0004], 1F451F53h	; SE
+	call Lose_Screen
+	mov dl, 10
+	mov dh, 5
+	call set_position
+
+	mov bl, 8
+	mov si, str_start1
+	call prints
 	call reset
 	
 reset:
 	xor ah, ah
-	int 16h
-    int 19h     
+    int 16h
+	int 19h
 data:
+	str_start0      db 'Ganhou',0 
+	str_start1      db 'Voce Perdeu!, Aperte qualquer tecla para tentar novamente',0
+
 	VIDMEM		equ 0B800h
 	SCREENW		equ 80
 	SCREENH		equ 25
