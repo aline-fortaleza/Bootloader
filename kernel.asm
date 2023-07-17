@@ -62,6 +62,14 @@ Lose_Screen:
 	rep stosw				
 	ret	
 
+Win_Screen:
+	mov ax, 2020h
+	xor di, di
+	mov bl,0eh 
+	mov cx, SCREENW*SCREENH
+	rep stosw				
+	ret
+
 Draw_snake:
 	xor bx, bx				
 	mov cx, [snakeLength]	
@@ -303,19 +311,20 @@ prints:
  	ret	
 
 game_won:
-	mov dl, 35
-	mov dh, 1
+	call Win_Screen
+	mov dl, 14
+	mov dh, 7
 	call set_position
 
-	mov bl, 7
+	mov bl, 8
 	mov si, str_start0
 	call prints
 	call reset
 	
 game_lost:
 	call Lose_Screen
-	mov dl, 10
-	mov dh, 5
+	mov dl, 14
+	mov dh, 7
 	call set_position
 
 	mov bl, 8
@@ -328,13 +337,13 @@ reset:
     int 16h
 	int 19h
 data:
-	str_start0      db 'Ganhou',0 
+	str_start0      db 'Voce Ganhou!, Aperte qualquer tecla para jogar novamente',0 
 	str_start1      db 'Voce Perdeu!, Aperte qualquer tecla para tentar novamente',0
 
 	VIDMEM		equ 0B800h
 	SCREENW		equ 80
 	SCREENH		equ 25
-	WINCOND		equ 20
+	WINCOND		equ 2
 	BGCOLOR		equ 1020h
 	APPLECOLOR  equ 4020h
 	SNAKECOLOR  equ 2020h
